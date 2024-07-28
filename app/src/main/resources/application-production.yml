@@ -1,0 +1,5 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://admin:WVDP9LtShc5QX6ETVZNfnoflKeqwWyhy@dpg-cqir2n8gph6c738tb16g-a/taskmanager_postgresql
+    username: admin
+    password: WVDP9LtShc5QX6ETVZNfnoflKeqwWyhy
