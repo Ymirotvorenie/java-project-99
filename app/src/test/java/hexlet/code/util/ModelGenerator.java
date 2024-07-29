@@ -22,10 +22,10 @@ public class ModelGenerator {
     private void init() {
         userModel = Instancio.of(User.class)
                 .ignore(Select.field(User::getId))
-				.supply(Select.field(User::getFirstName), () -> faker.name().firstName())
-				.supply(Select.field(User::getLastName), () -> faker.name().lastName())
-				.supply(Select.field(User::getEmail), () -> faker.internet().emailAddress())
-				.supply(Select.field(User::getPassword), () -> faker.animal().name())
+                .supply(Select.field(User::getFirstName), () -> faker.name().firstName())
+                .supply(Select.field(User::getLastName), () -> faker.name().lastName())
+                .supply(Select.field(User::getEmail), () -> faker.internet().emailAddress())
+                .supply(Select.field(User::getPassword), () -> faker.animal().name())
                 .toModel();
     }
 }
