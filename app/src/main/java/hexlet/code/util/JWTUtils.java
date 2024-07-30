@@ -9,7 +9,6 @@ import org.springframework.stereotype.Component;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 
-// BEGIN
 @Component
 public class JWTUtils {
     @Autowired
@@ -27,4 +26,3 @@ public class JWTUtils {
         return this.encoder.encode(JwtEncoderParameters.from(claims)).getTokenValue();
     }
 }
-// END

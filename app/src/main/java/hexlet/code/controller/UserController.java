@@ -4,9 +4,11 @@ import hexlet.code.dto.UserCreateDTO;
 import hexlet.code.dto.UserDTO;
 import hexlet.code.dto.UserUpdateDTO;
 import hexlet.code.service.UserService;
+import hexlet.code.util.UserUtils;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -25,6 +27,9 @@ public class UserController {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private UserUtils userUtils;
+
     @GetMapping
     public List<UserDTO> index() {
         return userService.getAll();
@@ -42,12 +47,16 @@ public class UserController {
     }
 
     @PutMapping(path = "/{id}")
+    //вынести админа в конфииг
+    @PreAuthorize("@userUtils.getCurrentUser().getEmail().equals('hexlet@example.com')")
     public UserDTO update(@PathVariable Long id, @Valid @RequestBody UserUpdateDTO userData) {
         return userService.update(id, userData);
     }
 
     @DeleteMapping(path = "/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
+    //вынести админа в конфииг
+    @PreAuthorize("@userUtils.getCurrentUser().getEmail().equals('hexlet@example.com')")
     public void destroy(@PathVariable Long id) {
         userService.destroy(id);
     }

@@ -46,14 +46,20 @@ class UsersControllerTest {
     private ModelGenerator modelGenerator;
 
     private JwtRequestPostProcessor token;
+    private JwtRequestPostProcessor adminToken;
 
     private User testUser;
+    private User testAdmin;
 
     @BeforeEach
     public void setUp() {
         userRepository.deleteAll();
         testUser = Instancio.of(modelGenerator.getUserModel()).create();
         token = jwt().jwt(builder -> builder.subject(testUser.getEmail()));
+
+        testAdmin = Instancio.of(modelGenerator.getUserModel()).create();
+        testAdmin.setEmail("hexlet@example.com");
+        adminToken = jwt().jwt(builder -> builder.subject("hexlet@example.com"));
 
     }
     @Test
@@ -98,14 +104,34 @@ class UsersControllerTest {
     }
 
     @Test
-    public void testUpdateUser() throws Exception {
+    public void testUpdateUserNotAuth() throws Exception {
+        userRepository.save(testAdmin);
         userRepository.save(testUser);
+        var oldEmail = testUser.getEmail();
 
         var data = new HashMap<>();
         data.put("email", "test@test.ru");
 
         var request = put("/users/" + testUser.getId())
                 .with(token)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(om.writeValueAsString(data));
+        var result = mockMvc.perform(request).andExpect(status().isForbidden());
+
+        assertEquals(userRepository.findById(testUser.getId()).get().getEmail(), oldEmail);
+        assertEquals(userRepository.findById(testUser.getId()).get().getFirstName(), testUser.getFirstName());
+    }
+
+    @Test
+    public void testUpdateUserAuth() throws Exception {
+        userRepository.save(testAdmin);
+        userRepository.save(testUser);
+
+        var data = new HashMap<>();
+        data.put("email", "test@test.ru");
+
+        var request = put("/users/" + testUser.getId())
+                .with(adminToken)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(om.writeValueAsString(data));
         var result = mockMvc.perform(request).andExpect(status().isOk());
@@ -115,15 +141,28 @@ class UsersControllerTest {
     }
 
     @Test
-    public void testDestroyUser() throws Exception {
+    public void testDestroyUserNotAuth() throws Exception {
 
         userRepository.save(testUser);
         var request = delete("/users/" + testUser.getId())
                 .with(token);
         mockMvc.perform(request)
+                .andExpect(status().isForbidden());
+
+        assertEquals(userRepository.findAll().size(), 1);
+    }
+
+    @Test
+    public void testDestroyUserAuth() throws Exception {
+        userRepository.save(testAdmin);
+        userRepository.save(testUser);
+        assertEquals(userRepository.findAll().size(), 2);
+        var request = delete("/users/" + testUser.getId())
+                .with(adminToken);
+        mockMvc.perform(request)
                 .andExpect(status().isNoContent());
 
-        assertEquals(userRepository.findAll().size(), 0);
+        assertEquals(userRepository.findAll().size(), 1);
         assertTrue(userRepository.findById(testUser.getId()).isEmpty());
     }
 }
