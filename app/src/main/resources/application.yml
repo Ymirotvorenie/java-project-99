@@ -4,6 +4,23 @@ spring:
     hibernate:
       ddl-auto: update
 
+  output:
+    ansi:
+      enabled: always
+
+  # mvc:
+  #   log-request-details: true
+  #   log-resolved-exception: true
+  # codec:
+  #   log-request-details: true
+
+  logging:
+    level:
+      root: WARN
+      org:
+        springframework:
+          # web: DEBUG
+          security: DEBUG
 rsa:
   private-key: classpath:certs/private.pem
   public-key: classpath:certs/public.pem

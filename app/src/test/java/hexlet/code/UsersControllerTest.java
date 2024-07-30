@@ -64,7 +64,7 @@ class UsersControllerTest {
     }
     @Test
     public void testIndex() throws Exception {
-        var request = get("/users").with(token);
+        var request = get("/api/users").with(token);
         var result = mockMvc.perform(request).andExpect(status().isOk()).andReturn();
         var body = result.getResponse().getContentAsString();
 
@@ -73,7 +73,8 @@ class UsersControllerTest {
 
     @Test
     public void testCreateUser() throws Exception {
-        var request = post("/users")
+        var request = post("/api/users")
+                .with(token)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(om.writeValueAsString(testUser));
         var result = mockMvc.perform(request)
@@ -89,7 +90,7 @@ class UsersControllerTest {
     @Test
     public void testShowUser() throws Exception {
         userRepository.save(testUser);
-        var request = get("/users/" + testUser.getId())
+        var request = get("/api/users/" + testUser.getId())
                 .with(token);
         var result = mockMvc.perform(request)
                 .andExpect(status().isOk())
@@ -106,13 +107,14 @@ class UsersControllerTest {
     @Test
     public void testUpdateUserNotAuth() throws Exception {
         userRepository.save(testAdmin);
+        System.out.println("JJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJ " + testAdmin.getPassword());
         userRepository.save(testUser);
         var oldEmail = testUser.getEmail();
 
         var data = new HashMap<>();
         data.put("email", "test@test.ru");
 
-        var request = put("/users/" + testUser.getId())
+        var request = put("/api/users/" + testUser.getId())
                 .with(token)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(om.writeValueAsString(data));
@@ -130,7 +132,7 @@ class UsersControllerTest {
         var data = new HashMap<>();
         data.put("email", "test@test.ru");
 
-        var request = put("/users/" + testUser.getId())
+        var request = put("/api/users/" + testUser.getId())
                 .with(adminToken)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(om.writeValueAsString(data));
@@ -144,7 +146,7 @@ class UsersControllerTest {
     public void testDestroyUserNotAuth() throws Exception {
 
         userRepository.save(testUser);
-        var request = delete("/users/" + testUser.getId())
+        var request = delete("/api/users/" + testUser.getId())
                 .with(token);
         mockMvc.perform(request)
                 .andExpect(status().isForbidden());
@@ -157,7 +159,7 @@ class UsersControllerTest {
         userRepository.save(testAdmin);
         userRepository.save(testUser);
         assertEquals(userRepository.findAll().size(), 2);
-        var request = delete("/users/" + testUser.getId())
+        var request = delete("/api/users/" + testUser.getId())
                 .with(adminToken);
         mockMvc.perform(request)
                 .andExpect(status().isNoContent());

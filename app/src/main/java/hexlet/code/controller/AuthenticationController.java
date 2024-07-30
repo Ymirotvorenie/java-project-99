@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 
 @RestController
-@RequestMapping("/login")
+@RequestMapping("/api/login")
 public class AuthenticationController {
     @Autowired
     private JWTUtils jwtUtils;
@@ -20,13 +20,12 @@ public class AuthenticationController {
     @Autowired
     private AuthenticationManager authenticationManager;
 
-    @PostMapping("")
+    @PostMapping
     public String create(@RequestBody AuthRequest authRequest) {
         var authentication = new UsernamePasswordAuthenticationToken(
                 authRequest.getUsername(), authRequest.getPassword());
 
         authenticationManager.authenticate(authentication);
-
         var token = jwtUtils.generateToken(authRequest.getUsername());
         return token;
     }

@@ -38,8 +38,11 @@ public class SecurityConfig {
                                                    HandlerMappingIntrospector introspector) throws Exception {
         return http.csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/login").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/users").permitAll()
+                        .requestMatchers("/").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/login").permitAll()
+                        .requestMatchers("/users").permitAll()
+                        .requestMatchers("/index.html").permitAll()
+                        .requestMatchers("/assets/**").permitAll()
                         .anyRequest().authenticated())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .oauth2ResourceServer(rs -> rs.jwt(jwt -> jwt.decoder(jwtDecoder)))
