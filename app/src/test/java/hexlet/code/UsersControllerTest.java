@@ -60,10 +60,9 @@ class UsersControllerTest {
         testAdmin = Instancio.of(modelGenerator.getUserModel()).create();
         testAdmin.setEmail("hexlet@example.com");
         adminToken = jwt().jwt(builder -> builder.subject("hexlet@example.com"));
-
     }
     @Test
-    public void testIndex() throws Exception {
+    public void testGetAll() throws Exception {
         var request = get("/api/users").with(token);
         var result = mockMvc.perform(request).andExpect(status().isOk()).andReturn();
         var body = result.getResponse().getContentAsString();
@@ -107,7 +106,6 @@ class UsersControllerTest {
     @Test
     public void testUpdateUserNotAuth() throws Exception {
         userRepository.save(testAdmin);
-        System.out.println("JJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJ " + testAdmin.getPassword());
         userRepository.save(testUser);
         var oldEmail = testUser.getEmail();
 

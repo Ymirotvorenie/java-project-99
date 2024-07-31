@@ -33,7 +33,7 @@ public class UserController {
     private UserUtils userUtils;
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<UserDTO>> index() {
+    public ResponseEntity<List<UserDTO>> getAll() {
         var users = userService.getAll();
         return ResponseEntity.ok()
                 .header("X-Total-Count", String.valueOf(users.size()))
