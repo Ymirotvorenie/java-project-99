@@ -20,7 +20,6 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
 
-
 import static jakarta.persistence.GenerationType.IDENTITY;
 
 @Entity
@@ -59,4 +58,5 @@ public class User implements BaseEntity, UserDetails {
     public String getUsername() {
         return email;
     }
+
 }

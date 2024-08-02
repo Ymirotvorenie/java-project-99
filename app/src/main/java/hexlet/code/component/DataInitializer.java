@@ -2,6 +2,10 @@ package hexlet.code.component;
 
 import hexlet.code.dto.UserCreateDTO;
 import hexlet.code.mapper.UserMapper;
+import hexlet.code.model.Task;
+import hexlet.code.model.TaskStatus;
+import hexlet.code.repository.TaskRepository;
+import hexlet.code.repository.TaskStatusRepository;
 import hexlet.code.repository.UserRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,17 +13,25 @@ import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Component
 @AllArgsConstructor
 public class DataInitializer implements ApplicationRunner {
 
 
     @Autowired
-    private final UserRepository userRepository;
+    private UserRepository userRepository;
 
     @Autowired
-    private final UserMapper userMapper;
+    private UserMapper userMapper;
 
+    @Autowired
+    private TaskStatusRepository taskStatusRepository;
+
+    @Autowired
+    private TaskRepository taskRepository;
 
     @Override
     public void run(ApplicationArguments args) throws Exception {
@@ -28,5 +40,29 @@ public class DataInitializer implements ApplicationRunner {
         userData.setPassword("qwerty");
         var user = userMapper.map(userData);
         userRepository.save(user);
+
+        var taskStatuses = createTaskStatuses();
+        taskStatusRepository.saveAll(taskStatuses);
+
+        var task = new Task();
+        task.setAssignee(user);
+        task.setName("Test task name");
+        task.setDescription("Test task description");
+        task.setTaskStatus(taskStatusRepository.findById(1L).get());
+        task.setIndex(33);
+        taskRepository.save(task);
+
+    }
+
+    private List<TaskStatus> createTaskStatuses() {
+        var taskStatuses = new ArrayList<TaskStatus>();
+
+        taskStatuses.add(new TaskStatus("Draft", "draft"));
+        taskStatuses.add(new TaskStatus("ToReview", "to_review"));
+        taskStatuses.add(new TaskStatus("ToBeFixed", "to_be_fixed"));
+        taskStatuses.add(new TaskStatus("ToPublish", "to_publish"));
+        taskStatuses.add(new TaskStatus("Published", "published"));
+
+        return taskStatuses;
     }
 }

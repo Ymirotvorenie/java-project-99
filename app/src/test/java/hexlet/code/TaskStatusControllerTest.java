@@ -2,9 +2,7 @@ package hexlet.code;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import hexlet.code.model.TaskStatus;
-import hexlet.code.model.User;
 import hexlet.code.repository.TaskStatusRepository;
-import hexlet.code.repository.UserRepository;
 import hexlet.code.util.ModelGenerator;
 import org.instancio.Instancio;
 import org.junit.jupiter.api.BeforeEach;
@@ -32,15 +30,12 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 
 @SpringBootTest
 @AutoConfigureMockMvc
-public class TaskStatusTest {
+public class TaskStatusControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
     @Autowired
     private ObjectMapper om;
-
-    @Autowired
-    private UserRepository userRepository;
 
     @Autowired
     private TaskStatusRepository taskStatusRepository;
@@ -49,23 +44,15 @@ public class TaskStatusTest {
     private ModelGenerator modelGenerator;
 
     private JwtRequestPostProcessor token;
-    private JwtRequestPostProcessor adminToken;
 
     private TaskStatus testTaskStatus;
-    private User testUser;
-    private User testAdmin;
+
 
     @BeforeEach
     public void setUp() {
         taskStatusRepository.deleteAll();
-        testUser = Instancio.of(modelGenerator.getUserModel()).create();
-        token = jwt().jwt(builder -> builder.subject(testUser.getEmail()));
-
+        token = jwt().jwt(builder -> builder.subject("test@mail.com"));
         testTaskStatus = Instancio.of(modelGenerator.getTaskStatusModel()).create();
-        testAdmin = Instancio.of(modelGenerator.getUserModel()).create();
-        testAdmin.setEmail("hexlet@example.com");
-        adminToken = jwt().jwt(builder -> builder.subject("hexlet@example.com"));
-
     }
 
     @Test
@@ -78,7 +65,7 @@ public class TaskStatusTest {
     }
 
     @Test
-    public void testShowTasStatus() throws Exception {
+    public void testShowTaskStatus() throws Exception {
         taskStatusRepository.save(testTaskStatus);
         var request = get("/api/task_statuses/" + testTaskStatus.getId()).with(token);
         var result = mockMvc.perform(request).andExpect(status().isOk()).andReturn();
@@ -93,7 +80,7 @@ public class TaskStatusTest {
     @Test
     public void testCreateTaskStatusAuth() throws Exception {
         var request = post("/api/task_statuses")
-                .with(adminToken)
+                .with(token)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(om.writeValueAsString(testTaskStatus));
         var result = mockMvc.perform(request)

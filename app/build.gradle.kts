@@ -55,7 +55,10 @@ dependencies {
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 	testImplementation("net.javacrumbs.json-unit:json-unit-assertj:3.2.7")
 	implementation("net.datafaker:datafaker:2.3.0")
-	implementation("org.instancio:instancio-junit:4.8.1")
+	implementation("org.instancio:instancio-junit:5.0.1")
+
+	//auto restart
+	implementation("org.springframework.boot:spring-boot-devtools")
 
 
 
