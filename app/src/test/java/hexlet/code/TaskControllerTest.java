@@ -2,7 +2,9 @@ package hexlet.code;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import hexlet.code.mapper.TaskMapper;
+import hexlet.code.model.Label;
 import hexlet.code.model.Task;
+import hexlet.code.repository.LabelRepository;
 import hexlet.code.repository.TaskRepository;
 import hexlet.code.repository.TaskStatusRepository;
 import hexlet.code.repository.UserRepository;
@@ -16,6 +18,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.JwtRequestPostProcessor;
 import org.springframework.test.web.servlet.MockMvc;
+
+import java.util.ArrayList;
 
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -51,6 +55,9 @@ public class TaskControllerTest {
     @Autowired
     private TaskStatusRepository taskStatusRepository;
 
+    @Autowired
+    private LabelRepository labelRepository;
+
     private JwtRequestPostProcessor token;
     private Task testTask;
 
@@ -63,6 +70,12 @@ public class TaskControllerTest {
 
         testTask.setAssignee(userRepository.findByEmail("hexlet@example.com").get());
         testTask.setTaskStatus(taskStatusRepository.findBySlug("draft").get());
+
+        var labels = new ArrayList<Label>();
+        var label = labelRepository.findByName("feature").orElseThrow();
+        labels.add(label);
+        testTask.setLabels(labels);
+
     }
 
     @Test
@@ -76,7 +89,6 @@ public class TaskControllerTest {
 
     @Test
     public void testShowTask() throws Exception {
-        System.out.println(testTask.getTaskStatus().getName() + "       " + testTask.getName());
         taskRepository.save(testTask);
         var request = get("/api/tasks/" + testTask.getId()).with(token);
         var result = mockMvc.perform(request).andExpect(status().isOk()).andReturn();
@@ -98,9 +110,7 @@ public class TaskControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(om.writeValueAsString(dto));
 
-        var result = mockMvc.perform(request).andExpect(status().isCreated());
-        System.out.println(result.andReturn().getRequest().getContentAsString());
-
+        mockMvc.perform(request).andExpect(status().isCreated());
         var task = taskRepository.findByName(dto.getTitle()).orElseThrow();
 
         assertThat(task.getName()).isEqualTo(dto.getTitle());
@@ -125,7 +135,7 @@ public class TaskControllerTest {
         mockMvc.perform(request)
                 .andExpect(status().isOk());
 
-        var task = taskRepository.findById(testTask.getId()).get();
+        var task = taskRepository.findById(testTask.getId()).orElseThrow();
 
         assertThat(task.getName()).isEqualTo(dto.getTitle());
         assertThat(task.getDescription()).isEqualTo(dto.getContent());
@@ -137,7 +147,8 @@ public class TaskControllerTest {
 
         var request = delete("/api/tasks/" + testTask.getId())
                 .with(token);
-        var result = mockMvc.perform(request).andExpect(status().isNoContent()).andReturn();
-        assertTrue(taskRepository.findById(testTask.getId()).isEmpty());
+        mockMvc.perform(request).andExpect(status().isNoContent()).andReturn();
+        var isTaskNotExist = taskRepository.findById(testTask.getId()).isEmpty();
+        assertTrue(isTaskNotExist);
     }
 }

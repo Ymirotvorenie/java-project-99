@@ -2,8 +2,10 @@ package hexlet.code.component;
 
 import hexlet.code.dto.UserCreateDTO;
 import hexlet.code.mapper.UserMapper;
+import hexlet.code.model.Label;
 import hexlet.code.model.Task;
 import hexlet.code.model.TaskStatus;
+import hexlet.code.repository.LabelRepository;
 import hexlet.code.repository.TaskRepository;
 import hexlet.code.repository.TaskStatusRepository;
 import hexlet.code.repository.UserRepository;
@@ -19,8 +21,6 @@ import java.util.List;
 @Component
 @AllArgsConstructor
 public class DataInitializer implements ApplicationRunner {
-
-
     @Autowired
     private UserRepository userRepository;
 
@@ -33,6 +33,9 @@ public class DataInitializer implements ApplicationRunner {
     @Autowired
     private TaskRepository taskRepository;
 
+    @Autowired
+    private LabelRepository labelRepository;
+
     @Override
     public void run(ApplicationArguments args) throws Exception {
         var userData = new UserCreateDTO();
@@ -41,8 +44,7 @@ public class DataInitializer implements ApplicationRunner {
         var user = userMapper.map(userData);
         userRepository.save(user);
 
-        var taskStatuses = createTaskStatuses();
-        taskStatusRepository.saveAll(taskStatuses);
+        taskStatusRepository.saveAll(seedTaskStatuses());
 
         var task = new Task();
         task.setAssignee(user);
@@ -52,9 +54,11 @@ public class DataInitializer implements ApplicationRunner {
         task.setIndex(33);
         taskRepository.save(task);
 
+        labelRepository.saveAll(seedLabels());
+
     }
 
-    private List<TaskStatus> createTaskStatuses() {
+    private List<TaskStatus> seedTaskStatuses() {
         var taskStatuses = new ArrayList<TaskStatus>();
 
         taskStatuses.add(new TaskStatus("Draft", "draft"));
@@ -64,5 +68,14 @@ public class DataInitializer implements ApplicationRunner {
         taskStatuses.add(new TaskStatus("Published", "published"));
 
         return taskStatuses;
+    }
+
+    private List<Label> seedLabels() {
+        var labels = new ArrayList<Label>();
+
+        labels.add(new Label("feature"));
+        labels.add(new Label("bug"));
+
+        return labels;
     }
 }

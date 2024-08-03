@@ -1,4 +1,6 @@
 spring:
+  application:
+    name: app
   jpa:
     show-sql: true
     generate-ddl: true
@@ -9,11 +11,6 @@ spring:
     ansi:
       enabled: always
 
-  # mvc:
-  #   log-request-details: true
-  #   log-resolved-exception: true
-  # codec:
-  #   log-request-details: true
 
   logging:
     level:
@@ -22,6 +19,12 @@ spring:
         springframework:
           # web: DEBUG
           security: DEBUG
+
+springdoc:
+  api-doc:
+    path: /api-docs
+  swagger-ui:
+    path: /swagger-ui/index.html
 rsa:
   private-key: classpath:certs/private.pem
   public-key: classpath:certs/public.pem

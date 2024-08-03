@@ -60,7 +60,8 @@ dependencies {
 	//auto restart
 	implementation("org.springframework.boot:spring-boot-devtools")
 
-
+	//swagger
+	implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.6.0")
 
 
 
