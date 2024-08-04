@@ -1,9 +1,10 @@
 package hexlet.code;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import hexlet.code.model.User;
-import hexlet.code.repository.UserRepository;
+import hexlet.code.domain.user.model.User;
+import hexlet.code.domain.user.repository.UserRepository;
 import hexlet.code.util.ModelGenerator;
+import hexlet.code.util.UserUtils;
 import org.instancio.Instancio;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -14,7 +15,6 @@ import org.springframework.http.MediaType;
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.JwtRequestPostProcessor;
 
 import org.springframework.test.web.servlet.MockMvc;
-
 
 import java.util.HashMap;
 
@@ -43,6 +43,9 @@ class UsersControllerTest {
     private UserRepository userRepository;
 
     @Autowired
+    private UserUtils userUtils;
+
+    @Autowired
     private ModelGenerator modelGenerator;
 
     private JwtRequestPostProcessor token;
@@ -53,41 +56,38 @@ class UsersControllerTest {
 
     @BeforeEach
     public void setUp() {
-        userRepository.deleteAll();
         testUser = Instancio.of(modelGenerator.getUserModel()).create();
         token = jwt().jwt(builder -> builder.subject(testUser.getEmail()));
 
-        testAdmin = Instancio.of(modelGenerator.getUserModel()).create();
-        testAdmin.setEmail("hexlet@example.com");
+        testAdmin = userUtils.getTestUser();
         adminToken = jwt().jwt(builder -> builder.subject("hexlet@example.com"));
     }
+
     @Test
-    public void testGetAll() throws Exception {
+    public void testIndex() throws Exception {
         var request = get("/api/users").with(token);
         var result = mockMvc.perform(request).andExpect(status().isOk()).andReturn();
         var body = result.getResponse().getContentAsString();
-
         assertThatJson(body).isArray();
     }
 
     @Test
-    public void testCreateUser() throws Exception {
+    public void testCreate() throws Exception {
         var request = post("/api/users")
                 .with(token)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(om.writeValueAsString(testUser));
-        var result = mockMvc.perform(request)
+        mockMvc.perform(request)
                 .andExpect(status().isCreated());
 
         var user = userRepository.findByEmail(testUser.getEmail()).get();
         assertNotNull(user);
         assertThat(user.getFirstName()).isEqualTo(testUser.getFirstName());
         assertThat(user.getLastName()).isEqualTo(testUser.getLastName());
-
     }
 
     @Test
-    public void testShowUser() throws Exception {
+    public void testShow() throws Exception {
         userRepository.save(testUser);
         var request = get("/api/users/" + testUser.getId())
                 .with(token);
@@ -104,7 +104,25 @@ class UsersControllerTest {
     }
 
     @Test
-    public void testUpdateUserNotAuth() throws Exception {
+    public void testUpdate() throws Exception {
+        userRepository.save(testAdmin);
+        userRepository.save(testUser);
+
+        var data = new HashMap<>();
+        data.put("email", "test@test.ru");
+
+        var request = put("/api/users/" + testUser.getId())
+                .with(adminToken)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(om.writeValueAsString(data));
+        mockMvc.perform(request).andExpect(status().isOk());
+
+        assertEquals(userRepository.findById(testUser.getId()).get().getEmail(), "test@test.ru");
+        assertEquals(userRepository.findById(testUser.getId()).get().getFirstName(), testUser.getFirstName());
+    }
+
+    @Test
+    public void testUpdateNotAdmin() throws Exception {
         userRepository.save(testAdmin);
         userRepository.save(testUser);
         var oldEmail = testUser.getEmail();
@@ -116,54 +134,30 @@ class UsersControllerTest {
                 .with(token)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(om.writeValueAsString(data));
-        var result = mockMvc.perform(request).andExpect(status().isForbidden());
+        mockMvc.perform(request).andExpect(status().isForbidden());
 
         assertEquals(userRepository.findById(testUser.getId()).get().getEmail(), oldEmail);
         assertEquals(userRepository.findById(testUser.getId()).get().getFirstName(), testUser.getFirstName());
     }
 
     @Test
-    public void testUpdateUserAuth() throws Exception {
-        userRepository.save(testAdmin);
+    public void testDestroy() throws Exception {
         userRepository.save(testUser);
-
-        var data = new HashMap<>();
-        data.put("email", "test@test.ru");
-
-        var request = put("/api/users/" + testUser.getId())
-                .with(adminToken)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(om.writeValueAsString(data));
-        var result = mockMvc.perform(request).andExpect(status().isOk());
-
-        assertEquals(userRepository.findById(testUser.getId()).get().getEmail(), "test@test.ru");
-        assertEquals(userRepository.findById(testUser.getId()).get().getFirstName(), testUser.getFirstName());
+        var request = delete("/api/users/" + testUser.getId())
+                .with(adminToken);
+        mockMvc.perform(request)
+                .andExpect(status().isNoContent());
+        assertTrue(userRepository.findById(testUser.getId()).isEmpty());
     }
 
     @Test
-    public void testDestroyUserNotAuth() throws Exception {
-
+    public void testDestroyNotAdmin() throws Exception {
         userRepository.save(testUser);
         var request = delete("/api/users/" + testUser.getId())
                 .with(token);
         mockMvc.perform(request)
                 .andExpect(status().isForbidden());
-
-        assertEquals(userRepository.findAll().size(), 1);
-    }
-
-    @Test
-    public void testDestroyUserAuth() throws Exception {
-        userRepository.save(testAdmin);
-        userRepository.save(testUser);
-        assertEquals(userRepository.findAll().size(), 2);
-        var request = delete("/api/users/" + testUser.getId())
-                .with(adminToken);
-        mockMvc.perform(request)
-                .andExpect(status().isNoContent());
-
-        assertEquals(userRepository.findAll().size(), 1);
-        assertTrue(userRepository.findById(testUser.getId()).isEmpty());
+        assertTrue(userRepository.findById(testUser.getId()).isPresent());
     }
 }
 

@@ -1,8 +1,8 @@
 package hexlet.code;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import hexlet.code.model.TaskStatus;
-import hexlet.code.repository.TaskStatusRepository;
+import hexlet.code.domain.taskStatus.model.TaskStatus;
+import hexlet.code.domain.taskStatus.repository.TaskStatusRepository;
 import hexlet.code.util.ModelGenerator;
 import org.instancio.Instancio;
 import org.junit.jupiter.api.BeforeEach;
@@ -47,25 +47,22 @@ public class TaskStatusControllerTest {
 
     private TaskStatus testTaskStatus;
 
-
     @BeforeEach
     public void setUp() {
-        taskStatusRepository.deleteAll();
         token = jwt().jwt(builder -> builder.subject("test@mail.com"));
         testTaskStatus = Instancio.of(modelGenerator.getTaskStatusModel()).create();
     }
 
     @Test
-    public void testGetAll() throws Exception {
+    public void testIndex() throws Exception {
         var request = get("/api/task_statuses").with(token);
         var result = mockMvc.perform(request).andExpect(status().isOk()).andReturn();
         var body = result.getResponse().getContentAsString();
-
         assertThatJson(body).isArray();
     }
 
     @Test
-    public void testShowTaskStatus() throws Exception {
+    public void testShow() throws Exception {
         taskStatusRepository.save(testTaskStatus);
         var request = get("/api/task_statuses/" + testTaskStatus.getId()).with(token);
         var result = mockMvc.perform(request).andExpect(status().isOk()).andReturn();
@@ -78,12 +75,12 @@ public class TaskStatusControllerTest {
     }
 
     @Test
-    public void testCreateTaskStatusAuth() throws Exception {
+    public void testCreate() throws Exception {
         var request = post("/api/task_statuses")
                 .with(token)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(om.writeValueAsString(testTaskStatus));
-        var result = mockMvc.perform(request)
+        mockMvc.perform(request)
                 .andExpect(status().isCreated());
 
         var taskStatus = taskStatusRepository.findBySlug(testTaskStatus.getSlug()).get();
@@ -93,19 +90,19 @@ public class TaskStatusControllerTest {
     }
 
     @Test
-    public void testCreateTaskStatusNotAuth() throws Exception {
+    public void testCreateNotAuth() throws Exception {
         var newTaskStatus = Instancio.of(modelGenerator.getTaskStatusModel()).create();
         var request = post("/api/task_statuses")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(om.writeValueAsString(newTaskStatus));
-        var result = mockMvc.perform(request)
+        mockMvc.perform(request)
                 .andExpect(status().isUnauthorized());
         var taskStatusIsPresent = taskStatusRepository.findBySlug(newTaskStatus.getSlug()).isPresent();
         assertFalse(taskStatusIsPresent);
     }
 
     @Test
-    public void testUpdateTaskStatusAuth() throws Exception {
+    public void testUpdate() throws Exception {
         taskStatusRepository.save(testTaskStatus);
 
         var newData = new HashMap<String, String>();
@@ -116,7 +113,7 @@ public class TaskStatusControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(om.writeValueAsString(newData));
 
-        var result = mockMvc.perform(request).andExpect(status().isOk());
+        mockMvc.perform(request).andExpect(status().isOk());
         var taskStatus = taskStatusRepository.findById(testTaskStatus.getId()).get();
         assertNotNull(taskStatus);
         assertEquals(newData.get("slug"), taskStatus.getSlug());
@@ -124,7 +121,7 @@ public class TaskStatusControllerTest {
     }
 
     @Test
-    public void testUpdateTaskStatusNotAuth() throws Exception {
+    public void testUpdateNotAuth() throws Exception {
         taskStatusRepository.save(testTaskStatus);
 
         var newData = new HashMap<String, String>();
@@ -134,26 +131,26 @@ public class TaskStatusControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(om.writeValueAsString(newData));
 
-        var result = mockMvc.perform(request).andExpect(status().isUnauthorized()).andReturn();
+        mockMvc.perform(request).andExpect(status().isUnauthorized()).andReturn();
         assertTrue(taskStatusRepository.findBySlug(newData.get("slug")).isEmpty());
     }
 
     @Test
-    public void testDestroyTaskStatusAuth() throws Exception {
+    public void testDestroy() throws Exception {
         taskStatusRepository.save(testTaskStatus);
 
         var request = delete("/api/task_statuses/" + testTaskStatus.getId())
                 .with(token);
-        var result = mockMvc.perform(request).andExpect(status().isNoContent()).andReturn();
+        mockMvc.perform(request).andExpect(status().isNoContent()).andReturn();
         assertTrue(taskStatusRepository.findBySlug(testTaskStatus.getSlug()).isEmpty());
     }
 
     @Test
-    public void testDestroyTaskStatusNotAuth() throws Exception {
+    public void testDestroyNotAuth() throws Exception {
         taskStatusRepository.save(testTaskStatus);
 
         var request = delete("/api/task_statuses/" + testTaskStatus.getId());
-        var result = mockMvc.perform(request).andExpect(status().isUnauthorized()).andReturn();
+        mockMvc.perform(request).andExpect(status().isUnauthorized()).andReturn();
         assertTrue(taskStatusRepository.findBySlug(testTaskStatus.getSlug()).isPresent());
     }
 }

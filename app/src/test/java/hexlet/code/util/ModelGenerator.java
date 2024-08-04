@@ -1,10 +1,10 @@
 package hexlet.code.util;
 
-import hexlet.code.model.Label;
-import hexlet.code.model.Task;
-import hexlet.code.model.TaskStatus;
-import hexlet.code.model.User;
-import hexlet.code.repository.TaskStatusRepository;
+import hexlet.code.domain.label.model.Label;
+import hexlet.code.domain.task.model.Task;
+import hexlet.code.domain.taskStatus.model.TaskStatus;
+import hexlet.code.domain.user.model.User;
+import hexlet.code.domain.taskStatus.repository.TaskStatusRepository;
 import jakarta.annotation.PostConstruct;
 import lombok.Getter;
 import net.datafaker.Faker;
@@ -41,7 +41,7 @@ public class ModelGenerator {
         taskStatusModel = Instancio.of(TaskStatus.class)
                 .ignore(Select.field(TaskStatus::getId))
                 .supply(Select.field(TaskStatus::getName), () -> faker.lorem().word())
-                .supply(Select.field(TaskStatus::getSlug), () -> faker.lorem().fixedString(4))
+                .supply(Select.field(TaskStatus::getSlug), () -> faker.lorem().characters(5, 11))
                 .toModel();
 
         taskModel = Instancio.of(Task.class)
@@ -55,7 +55,7 @@ public class ModelGenerator {
 
         labelModel = Instancio.of(Label.class)
                 .ignore(Select.field(Label::getId))
-                .supply(Select.field(Label::getName), () -> faker.bigBangTheory().character())
+                .supply(Select.field(Label::getName), () -> faker.lorem().characters(5, 11))
                 .ignore(Select.field(Label::getCreatedAt))
                 .toModel();
     }

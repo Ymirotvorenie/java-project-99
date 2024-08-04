@@ -1,14 +1,14 @@
 package hexlet.code.component;
 
-import hexlet.code.dto.UserCreateDTO;
-import hexlet.code.mapper.UserMapper;
-import hexlet.code.model.Label;
-import hexlet.code.model.Task;
-import hexlet.code.model.TaskStatus;
-import hexlet.code.repository.LabelRepository;
-import hexlet.code.repository.TaskRepository;
-import hexlet.code.repository.TaskStatusRepository;
-import hexlet.code.repository.UserRepository;
+import hexlet.code.domain.user.dto.UserCreateDTO;
+import hexlet.code.domain.user.mapper.UserMapper;
+import hexlet.code.domain.label.model.Label;
+import hexlet.code.domain.task.model.Task;
+import hexlet.code.domain.taskStatus.model.TaskStatus;
+import hexlet.code.domain.label.repository.LabelRepository;
+import hexlet.code.domain.task.repository.TaskRepository;
+import hexlet.code.domain.taskStatus.repository.TaskStatusRepository;
+import hexlet.code.domain.user.repository.UserRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
@@ -58,7 +58,7 @@ public class DataInitializer implements ApplicationRunner {
 
     }
 
-    private List<TaskStatus> seedTaskStatuses() {
+    public List<TaskStatus> seedTaskStatuses() {
         var taskStatuses = new ArrayList<TaskStatus>();
 
         taskStatuses.add(new TaskStatus("Draft", "draft"));
@@ -70,7 +70,7 @@ public class DataInitializer implements ApplicationRunner {
         return taskStatuses;
     }
 
-    private List<Label> seedLabels() {
+    public List<Label> seedLabels() {
         var labels = new ArrayList<Label>();
 
         labels.add(new Label("feature"));

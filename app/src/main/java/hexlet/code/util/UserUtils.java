@@ -1,8 +1,9 @@
 package hexlet.code.util;
 
-import hexlet.code.model.User;
-import hexlet.code.repository.UserRepository;
+import hexlet.code.domain.user.model.User;
+import hexlet.code.domain.user.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
@@ -11,13 +12,21 @@ public class UserUtils {
     @Autowired
     private UserRepository userRepository;
 
+    @Value("${admin.admin-email}")
+    private String adminEmail;
+
     public User getCurrentUser() {
         var authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null || !authentication.isAuthenticated()) {
             return null;
         }
         var email = authentication.getName();
-        return userRepository.findByEmail(email).get();
+        return userRepository.findByEmail(email).orElseThrow();
+    }
+
+    public boolean isCurrentUserAdmin() {
+        var email = getCurrentUser().getEmail();
+        return email.equals(adminEmail);
     }
 
     public User getTestUser() {
