@@ -2,11 +2,13 @@ package hexlet.code.service;
 
 import hexlet.code.dto.TaskCreateDTO;
 import hexlet.code.dto.TaskDTO;
+import hexlet.code.dto.TaskParamsDTO;
 import hexlet.code.dto.TaskUpdateDTO;
 import hexlet.code.exception.ResourceNotFoundException;
 import hexlet.code.mapper.TaskMapper;
 import hexlet.code.repository.TaskRepository;
 import hexlet.code.repository.UserRepository;
+import hexlet.code.specification.TaskSpecification;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,6 +16,9 @@ import java.util.List;
 
 @Service
 public class TaskService {
+    @Autowired
+    private TaskSpecification specBuilder;
+
     @Autowired
     private TaskRepository taskRepository;
 
@@ -23,9 +28,11 @@ public class TaskService {
     @Autowired
     private TaskMapper taskMapper;
 
-    public List<TaskDTO> getAll() {
-        return taskRepository.findAll().stream()
-                .map(t -> taskMapper.map(t)).toList();
+    public List<TaskDTO> getAll(TaskParamsDTO params) {
+        var spec = specBuilder.build(params);
+
+        return taskRepository.findAll(spec).stream().map(taskMapper::map).toList();
+
     }
 
     public TaskDTO findById(Long id) {

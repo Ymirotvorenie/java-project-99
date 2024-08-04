@@ -68,11 +68,11 @@ public class TaskControllerTest {
         token = jwt().jwt(builder -> builder.subject("test@mail.com"));
         testTask = Instancio.of(modelGenerator.getTaskModel()).create();
 
-        testTask.setAssignee(userRepository.findByEmail("hexlet@example.com").get());
-        testTask.setTaskStatus(taskStatusRepository.findBySlug("draft").get());
+        testTask.setAssignee(userRepository.findByEmail("hexlet@example.com").orElseThrow());
+        testTask.setTaskStatus(taskStatusRepository.findBySlug("draft").orElseThrow());
 
         var labels = new ArrayList<Label>();
-        var label = labelRepository.findByName("feature").orElseThrow();
+        var label = labelRepository.findById(1L).orElseThrow();
         labels.add(label);
         testTask.setLabels(labels);
 
@@ -150,5 +150,24 @@ public class TaskControllerTest {
         mockMvc.perform(request).andExpect(status().isNoContent()).andReturn();
         var isTaskNotExist = taskRepository.findById(testTask.getId()).isEmpty();
         assertTrue(isTaskNotExist);
+    }
+
+    @Test
+    public void testSpecificationGetAll() throws Exception {
+        taskRepository.save(testTask);
+
+        var request = get("/api/tasks?titleCont=create&assigneeId=1&status=to_be_fixed&labelId=1")
+                .with(token);
+        var result = mockMvc.perform(request).andExpect(status().isOk()).andReturn();
+
+        var body = result.getResponse().getContentAsString();
+
+        assertThatJson(body).isArray().allSatisfy(task ->
+                    assertThatJson(task)
+                            .and(v -> v.node("name").asString().containsIgnoringCase(testTask.getName()))
+                            .and(v -> v.node("assigneeId").isEqualTo(testTask.getAssignee().getId()))
+                            .and(v -> v.node("labelId").isEqualTo(1))
+                            .and(v -> v.node("taskStatus").asString().isEqualTo("draft"))
+                );
     }
 }
