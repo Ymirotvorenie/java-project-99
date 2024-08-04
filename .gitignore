@@ -1,10 +1,11 @@
-HELP.md
+../HELP.md
 .gradle
 build/
 !gradle/wrapper/gradle-wrapper.jar
 !**/src/main/**/build/
 !**/src/test/**/build/
 node_modules/
+.idea
 
 ### STS ###
 .apt_generated
