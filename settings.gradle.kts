@@ -1,1 +1,8 @@
-rootProject.name = "java-project-99"
+pluginManagement {
+    repositories {
+        maven { url = uri("https://repo.spring.io/snapshot") }
+        gradlePluginPortal()
+    }
+}
+
+rootProject.name = "app"

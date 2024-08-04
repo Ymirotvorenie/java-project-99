@@ -9,8 +9,6 @@ plugins {
 
 }
 
-
-
 group = "hexlet.code"
 version = "0.0.1-SNAPSHOT"
 
@@ -26,6 +24,7 @@ configurations {
 
 repositories {
 	mavenCentral()
+	maven { url = uri("https://repo.spring.io/snapshot") }
 }
 
 dependencies {
