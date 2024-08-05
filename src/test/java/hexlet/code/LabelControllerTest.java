@@ -1,9 +1,9 @@
 package hexlet.code;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import hexlet.code.domain.label.mapper.LabelMapper;
-import hexlet.code.domain.label.model.Label;
-import hexlet.code.domain.label.repository.LabelRepository;
+import hexlet.code.mapper.LabelMapper;
+import hexlet.code.model.Label;
+import hexlet.code.repository.LabelRepository;
 import hexlet.code.util.ModelGenerator;
 import org.instancio.Instancio;
 import org.junit.jupiter.api.BeforeEach;

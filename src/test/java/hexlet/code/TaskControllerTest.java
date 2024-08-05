@@ -1,12 +1,12 @@
 package hexlet.code;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import hexlet.code.domain.task.mapper.TaskMapper;
-import hexlet.code.domain.label.model.Label;
-import hexlet.code.domain.task.model.Task;
-import hexlet.code.domain.label.repository.LabelRepository;
-import hexlet.code.domain.task.repository.TaskRepository;
-import hexlet.code.domain.taskStatus.repository.TaskStatusRepository;
+import hexlet.code.mapper.TaskMapper;
+import hexlet.code.model.Label;
+import hexlet.code.model.Task;
+import hexlet.code.repository.LabelRepository;
+import hexlet.code.repository.TaskRepository;
+import hexlet.code.repository.TaskStatusRepository;
 import hexlet.code.util.ModelGenerator;
 import hexlet.code.util.UserUtils;
 import org.instancio.Instancio;

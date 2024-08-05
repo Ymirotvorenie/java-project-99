@@ -1,8 +1,8 @@
 package hexlet.code;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import hexlet.code.domain.user.model.User;
-import hexlet.code.domain.user.repository.UserRepository;
+import hexlet.code.model.User;
+import hexlet.code.repository.UserRepository;
 import hexlet.code.util.ModelGenerator;
 import hexlet.code.util.UserUtils;
 import org.instancio.Instancio;

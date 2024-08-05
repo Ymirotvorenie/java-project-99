@@ -1,10 +1,10 @@
 package hexlet.code.util;
 
-import hexlet.code.domain.label.model.Label;
-import hexlet.code.domain.task.model.Task;
-import hexlet.code.domain.taskStatus.model.TaskStatus;
-import hexlet.code.domain.user.model.User;
-import hexlet.code.domain.taskStatus.repository.TaskStatusRepository;
+import hexlet.code.model.Label;
+import hexlet.code.model.Task;
+import hexlet.code.model.TaskStatus;
+import hexlet.code.model.User;
+import hexlet.code.repository.TaskStatusRepository;
 import jakarta.annotation.PostConstruct;
 import lombok.Getter;
 import net.datafaker.Faker;

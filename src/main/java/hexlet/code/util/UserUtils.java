@@ -1,7 +1,7 @@
 package hexlet.code.util;
 
-import hexlet.code.domain.user.model.User;
-import hexlet.code.domain.user.repository.UserRepository;
+import hexlet.code.model.User;
+import hexlet.code.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.context.SecurityContextHolder;
