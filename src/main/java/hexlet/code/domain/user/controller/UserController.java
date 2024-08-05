@@ -29,8 +29,7 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    @Autowired
-    private UserUtils userUtils;
+    private final UserUtils userUtils = new UserUtils();
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<UserDTO>> index() {
