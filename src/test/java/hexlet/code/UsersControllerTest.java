@@ -43,7 +43,7 @@ class UsersControllerTest {
     private UserRepository userRepository;
 
     @Autowired
-    private UserUtils userUtils;
+    private UserUtils userUtils = new UserUtils();
 
     @Autowired
     private ModelGenerator modelGenerator;

@@ -50,7 +50,7 @@ public class TaskControllerTest {
     private TaskRepository taskRepository;
 
     @Autowired
-    private UserUtils userUtils;
+    private final UserUtils userUtils = new UserUtils();
 
     @Autowired
     private TaskStatusRepository taskStatusRepository;
