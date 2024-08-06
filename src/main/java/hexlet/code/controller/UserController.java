@@ -55,7 +55,9 @@ public class UserController {
 
     @DeleteMapping(path = "/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @PreAuthorize("@userUtils.isCurrentUserAdmin()")
+    //@PreAuthorize("@userUtils.isCurrentUserAdmin()")
+
+    @PreAuthorize("@userRepository.findById(#id).get().getEmail() == authentication.name")
     public void destroy(@PathVariable Long id) {
         userService.destroy(id);
     }

@@ -143,21 +143,20 @@ class UsersControllerTest {
     @Test
     public void testDestroy() throws Exception {
         userRepository.save(testUser);
-        var request = delete("/api/users/" + testUser.getId())
-                .with(adminToken);
+        var request = delete("/api/users/" + testUser.getId()).with(token);
         mockMvc.perform(request)
                 .andExpect(status().isNoContent());
         assertTrue(userRepository.findById(testUser.getId()).isEmpty());
     }
 
-    @Test
-    public void testDestroyNotAdmin() throws Exception {
-        userRepository.save(testUser);
-        var request = delete("/api/users/" + testUser.getId())
-                .with(token);
-        mockMvc.perform(request)
-                .andExpect(status().isForbidden());
-        assertTrue(userRepository.findById(testUser.getId()).isPresent());
-    }
+//    @Test
+//    public void testDestroyNotAdmin() throws Exception {
+//        userRepository.save(testUser);
+//        var request = delete("/api/users/" + testUser.getId())
+//                .with(token);
+//        mockMvc.perform(request)
+//                .andExpect(status().isForbidden());
+//        assertTrue(userRepository.findById(testUser.getId()).isPresent());
+//    }
 }
 
