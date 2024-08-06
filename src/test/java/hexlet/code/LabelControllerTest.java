@@ -37,8 +37,7 @@ public class LabelControllerTest {
     @Autowired
     private LabelMapper mapper;
 
-    @Autowired
-    private ModelGenerator modelGenerator;
+    private ModelGenerator modelGenerator = new ModelGenerator();
 
     @Autowired
     private LabelRepository labelRepository;
