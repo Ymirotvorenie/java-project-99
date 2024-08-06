@@ -48,17 +48,16 @@ public class UserController {
     }
 
     @PutMapping(path = "/{id}")
-    @PreAuthorize("@userUtils.isCurrentUserAdmin")
+    @PreAuthorize("@userRepository.findById(#id).get().getEmail() == authentication.name")
     public UserDTO update(@PathVariable Long id, @Valid @RequestBody UserUpdateDTO userData) {
         return userService.update(id, userData);
     }
 
     @DeleteMapping(path = "/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    //@PreAuthorize("@userUtils.isCurrentUserAdmin()")
-
     @PreAuthorize("@userRepository.findById(#id).get().getEmail() == authentication.name")
     public void destroy(@PathVariable Long id) {
         userService.destroy(id);
     }
 }
+//@PreAuthorize("@userUtils.isCurrentUserAdmin()")
