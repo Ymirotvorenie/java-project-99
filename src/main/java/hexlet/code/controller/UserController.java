@@ -55,7 +55,7 @@ public class UserController {
 
     @DeleteMapping(path = "/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @PreAuthorize("@userUtils.isCurrentUserAdmin")
+    @PreAuthorize("@userUtils.isCurrentUserAdmin()")
     public void destroy(@PathVariable Long id) {
         userService.destroy(id);
     }
