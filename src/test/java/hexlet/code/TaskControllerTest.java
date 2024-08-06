@@ -43,7 +43,7 @@ public class TaskControllerTest {
     @Autowired
     private TaskMapper mapper;
 
-    private ModelGenerator modelGenerator = new ModelGenerator();
+    private final ModelGenerator modelGenerator = new ModelGenerator();
 
     @Autowired
     private TaskRepository taskRepository;

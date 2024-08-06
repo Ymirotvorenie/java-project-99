@@ -5,7 +5,7 @@ import hexlet.code.dto.UserDTO;
 import hexlet.code.dto.UserUpdateDTO;
 import hexlet.code.service.UserService;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -22,11 +22,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
+@RequiredArgsConstructor
 @RestController
 @RequestMapping(path = "/api/users")
 public class UserController {
-    @Autowired
-    private UserService userService;
+
+    private final UserService userService;
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<UserDTO>> index() {
@@ -48,6 +49,7 @@ public class UserController {
     }
 
     @PutMapping(path = "/{id}")
+    //@PreAuthorize("@userUtils.isCurrentUserAdmin()")
     @PreAuthorize("@userRepository.findById(#id).get().getEmail() == authentication.name")
     public UserDTO update(@PathVariable Long id, @Valid @RequestBody UserUpdateDTO userData) {
         return userService.update(id, userData);
@@ -55,9 +57,10 @@ public class UserController {
 
     @DeleteMapping(path = "/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
+    //@PreAuthorize("@userUtils.isCurrentUserAdmin()")
     @PreAuthorize("@userRepository.findById(#id).get().getEmail() == authentication.name")
     public void destroy(@PathVariable Long id) {
         userService.destroy(id);
     }
 }
-//@PreAuthorize("@userUtils.isCurrentUserAdmin()")
+
