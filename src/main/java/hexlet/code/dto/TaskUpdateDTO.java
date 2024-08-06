@@ -5,7 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.openapitools.jackson.nullable.JsonNullable;
 
-import java.util.List;
+import java.util.Set;
 
 @Setter
 @Getter
@@ -21,5 +21,5 @@ public class TaskUpdateDTO {
 
     private JsonNullable<String> content;
 
-    private JsonNullable<List<Long>> taskLabelIds;
+    private JsonNullable<Set<Long>> taskLabelIds;
 }

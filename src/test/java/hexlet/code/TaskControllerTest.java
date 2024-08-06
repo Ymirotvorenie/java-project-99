@@ -19,7 +19,7 @@ import org.springframework.http.MediaType;
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.JwtRequestPostProcessor;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.util.ArrayList;
+import java.util.HashSet;
 
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -70,7 +70,7 @@ public class TaskControllerTest {
         testTask.setAssignee(userUtils.getTestUser());
         testTask.setTaskStatus(taskStatusRepository.findBySlug("draft").orElseThrow());
 
-        var labels = new ArrayList<Label>();
+        var labels = new HashSet<Label>();
         var label = labelRepository.findById(1L).orElseThrow();
         labels.add(label);
         testTask.setLabels(labels);
